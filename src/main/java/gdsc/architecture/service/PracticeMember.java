@@ -5,6 +5,7 @@ import gdsc.architecture.entity.Member;
 import gdsc.architecture.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,10 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@Primary
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberServiceImpl implements MemberService {
-
+public class PracticeMember implements MemberService{
     private final MemberRepository memberRepository;
 
 
@@ -30,6 +31,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberResponseDTO> getAllMembers() {
+
+        log.info("PracticeMember");
         List<Member> members = memberRepository.findAll();
 
         List<MemberResponseDTO> result = entityToDtoList(members);
@@ -131,8 +134,8 @@ public class MemberServiceImpl implements MemberService {
 
     public void duplicateNickName(String nickName){
         memberRepository.findMemberByNickName(nickName).ifPresent(m ->{
-                    throw new IllegalStateException("중복된 닉네임입니다.");
-                });
+            throw new IllegalStateException("중복된 닉네임입니다.");
+        });
     }
 
     public void duplicateEmail(String email){

@@ -48,11 +48,4 @@ public class Member {
         this.password = password;
     }
 
-    public MemberResponseDTO toDto(){
-        MemberResponseDTO memberResponseDTO = MemberResponseDTO.builder().email(email)
-                .nickname(nickName)
-                .build();
-
-        return memberResponseDTO;
-    }
 }
