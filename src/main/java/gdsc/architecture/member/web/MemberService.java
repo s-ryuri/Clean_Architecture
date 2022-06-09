@@ -1,7 +1,7 @@
-package gdsc.architecture.service;
+package gdsc.architecture.member.web;
 
 import gdsc.architecture.dto.MemberResponseDTO;
-import gdsc.architecture.entity.Member;
+import gdsc.architecture.member.persistence.Member;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +14,7 @@ public interface MemberService {
 
     MemberResponseDTO changeNickName(Long memberId,String nickName);
 
-    Member login(String email,String password);
+    Member login(String email, String password);
 
     Member getMember(Long memberId);
 

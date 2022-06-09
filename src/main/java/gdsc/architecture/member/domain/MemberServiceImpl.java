@@ -1,11 +1,10 @@
-package gdsc.architecture.service;
+package gdsc.architecture.member.domain;
 
 import gdsc.architecture.dto.MemberResponseDTO;
-import gdsc.architecture.entity.Member;
-import gdsc.architecture.repository.MemberRepository;
+import gdsc.architecture.member.persistence.Member;
+import gdsc.architecture.member.web.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,22 +16,19 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
-@Primary
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PracticeMember implements MemberService{
+public class MemberServiceImpl implements MemberService {
+
     private final MemberRepository memberRepository;
 
-
     public Member getMember(Long memberId){
-        Optional<Member> member = memberRepository.findById(memberId);
-        return member.get();
+        Member member = memberRepository.findById(memberId).orElseThrow(IllegalStateException::new);
+        return member;
     }
 
     @Override
     public List<MemberResponseDTO> getAllMembers() {
-
-        log.info("PracticeMember");
         List<Member> members = memberRepository.findAll();
 
         List<MemberResponseDTO> result = entityToDtoList(members);
@@ -67,15 +63,10 @@ public class PracticeMember implements MemberService{
     @Override
     @Transactional
     public MemberResponseDTO changeNickName(Long memberId,String nickName) {
-        Optional<Member> findMember = memberRepository.findById(memberId);
-
-        if(findMember.isEmpty()){
-            throw new IllegalStateException("없는 아이디입니다.");
-        }
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalStateException("아이디가 존재하지 않습니다."));
 
         duplicateNickName(nickName);
 
-        Member member = findMember.get();
         member.changeNickname(nickName);
 
         return entityToDto(member);
@@ -83,20 +74,13 @@ public class PracticeMember implements MemberService{
 
     @Override
     public Member login(String email, String password) {
-        Optional<Member> member = memberRepository.findMemberByEmail(email);
-        if(member.isEmpty()){
-            throw new IllegalStateException("없는 아이디 입니다.");
-        }
-        checkLoginPassword(password,member.get().getPassword());
-        return member.get();
+        Member member = memberRepository.findMemberByEmail(email).orElseThrow(()-> new IllegalStateException("아이디가 존재하지 않습니다."));
+
+        checkLoginPassword(password,member.getPassword());
+        return member;
     }
 
-    public void checkLoginPassword(String inputPassword,String memberPassword){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(!encoder.matches(inputPassword,memberPassword)){
-            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-        }
-    }
+
 
     @Override
     public MemberResponseDTO entityToDto(Member member) {
@@ -108,11 +92,19 @@ public class PracticeMember implements MemberService{
         return MemberService.super.entityToDtoList(members);
     }
 
-    public String encodeBcrypt(String password){
+    private String encodeBcrypt(String password){
         return new BCryptPasswordEncoder().encode(password);
     }
 
-    public void checkPassword(String password){
+
+    private void checkLoginPassword(String inputPassword,String memberPassword){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(!encoder.matches(inputPassword,memberPassword)){
+            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    private void checkPassword(String password){
         final String reg = "[a-zA-Z]{8,30}";
         log.info("패스워드 체크");
         Matcher matcher = Pattern.compile(reg).matcher(password);
@@ -122,7 +114,7 @@ public class PracticeMember implements MemberService{
         }
     }
 
-    public void checkLength(String str){
+    private void checkLength(String str){
         final String reg = "[a-zA-Z]{5,20}";
 
         Matcher matcher = Pattern.compile(reg).matcher(str);
@@ -132,16 +124,15 @@ public class PracticeMember implements MemberService{
         }
     }
 
-    public void duplicateNickName(String nickName){
+    private void duplicateNickName(String nickName){
         memberRepository.findMemberByNickName(nickName).ifPresent(m ->{
-            throw new IllegalStateException("중복된 닉네임입니다.");
-        });
+                    throw new IllegalStateException("중복된 닉네임입니다.");
+                });
     }
 
-    public void duplicateEmail(String email){
+    private void duplicateEmail(String email){
         memberRepository.findMemberByEmail(email).ifPresent(m ->{
             throw new IllegalStateException("중복된 이메일입니다.");
         });
-
     }
 }

@@ -1,10 +1,9 @@
-package gdsc.architecture.controller;
+package gdsc.architecture.member.web;
 
 import gdsc.architecture.dto.LoginDTO;
 import gdsc.architecture.dto.MemberRequestDTO;
 import gdsc.architecture.dto.MemberResponseDTO;
-import gdsc.architecture.entity.Member;
-import gdsc.architecture.service.MemberService;
+import gdsc.architecture.member.persistence.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;

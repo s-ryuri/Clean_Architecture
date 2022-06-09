@@ -1,4 +1,4 @@
-package gdsc.architecture.entity;
+package gdsc.architecture.member.persistence;
 
 import gdsc.architecture.dto.MemberResponseDTO;
 import lombok.AccessLevel;
@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Entity
 @Getter

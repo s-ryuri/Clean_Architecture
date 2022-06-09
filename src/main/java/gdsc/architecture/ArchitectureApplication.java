@@ -1,6 +1,6 @@
 package gdsc.architecture;
 
-import gdsc.architecture.service.MemberService;
+import gdsc.architecture.member.web.MemberService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
